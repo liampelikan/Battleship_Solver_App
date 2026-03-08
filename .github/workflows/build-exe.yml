@@ -2,10 +2,18 @@ name: Build Windows Executable
 
 on:
   workflow_dispatch:
+  release:
+    types:
+      - published
   push:
     branches:
       - main
       - master
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -35,3 +43,9 @@ jobs:
           name: BattleshipHelper-windows
           path: dist/BattleshipHelper.exe
           if-no-files-found: error
+
+      - name: Upload executable to GitHub release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/BattleshipHelper.exe
